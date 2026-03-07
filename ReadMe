@@ -1,0 +1,317 @@
+
+JET Pro
+Job Evaluation Tool
+User Guide & Reference Manual
+Version 1.2.0  ·  2026
+Developed and Created by Paul Alay
+
+A single-file Progressive Web App for structured job evaluation,
+salary structure design, and HR compensation consulting.
+
+ 
+1. Overview
+JET Pro (Job Evaluation Tool) is a self-contained, single-file Progressive Web App (PWA) designed for HR professionals and compensation consultants. It provides a complete end-to-end workflow for evaluating job positions, building salary structures, and producing consulting-grade deliverables — all within a single HTML file that runs entirely in the browser.
+
+No installation, no server, no internet connection required after the initial load.
+
+Key Capabilities
+•	Factor-based job evaluation using customisable compensable factors and weighted scoring levels
+•	Position library management with departmental organisation and org-chart relationships
+•	Salary structure design including a configurable pay matrix with grades and steps
+•	Level clustering to group positions into job grades based on evaluation scores
+•	Analytics dashboards: score distribution, factor contribution, span of control, pay equity
+•	Consulting report generator with print-to-PDF export (report content only)
+•	Data import and export via CSV and XLSX, with full validation and merge/replace control
+•	Full project save and restore via .jet.json file
+•	Light and dark mode, offline capability, and auto-save to browser storage
+
+Technical Specifications
+Property	Details
+File type	Single HTML file (PWA)
+Schema version	1.2.0
+Browser storage key	jet_project (localStorage)
+Supported file formats	CSV, XLSX, .jet.json
+Chart library	Chart.js 4.4.0
+Spreadsheet library	SheetJS 0.18.5
+Works offline	Yes — service worker caches the app
+Auto-save interval	Every 60 seconds
+
+2. Getting Started
+Opening the App
+1.	Save the provided job-eval-builder.html file to your computer.
+2.	Open it in any modern browser (Chrome, Edge, Firefox, or Safari).
+3.	The app loads instantly and runs entirely in your browser — no internet needed after the first load.
+
+The app auto-saves your work to browser localStorage every 60 seconds. To preserve your work permanently, use Export → Full Project (.jet.json) to download a backup file.
+
+Recommended Workflow (7 Steps)
+Step	Section	What to Do
+1	Factor Builder	Define compensable factors and scoring levels
+2	Position Library	Add or import all job positions
+3	Evaluation Workspace	Score each position against every factor
+4	Job Ranking	Review ranked list and verify scores
+5	Level Clustering	Define job level bands from the score distribution
+6	Salary Structure	Build the salary matrix and assign grades to levels
+7	Consulting Report	Generate and export the final deliverable
+
+The Workflow Guide panel in the sidebar tracks your progress. Each step is marked as locked, active, or complete based on your data.
+
+3. Section-by-Section Guide
+3.1  Dashboard
+The Dashboard provides an at-a-glance summary of the current project. It shows key counts (factors, positions, evaluated jobs, salary grades), a 7-step workflow progress tracker, and quick-action buttons to navigate to the most common tasks.
+
+3.2  Factor Builder
+Compensable factors define the criteria used to measure and compare job value. Each factor has a name, a weight (relative importance), and a set of scoring levels.
+
+Adding a Factor
+4.	Click Add Factor.
+5.	Enter the factor name, weight, and an optional description.
+6.	Add levels — each level needs a name, point value, and optional description.
+7.	Save. The factor appears in the list and is immediately available in the Evaluation Workspace.
+
+Weights
+Weights control how much each factor contributes to the total score. Use Normalize Weights to scale all weights so they sum to 100. Factors can also be imported in bulk — see Section 5 (Data Management).
+
+⚠ Note: Replacing all factors via import will clear all existing evaluation scores, since factor IDs change. Always export a .jet.json backup before reimporting factors.
+
+3.3  Position Library
+The Position Library is the master list of all job titles being evaluated. Each position can hold the following fields:
+
+Field	Required	Notes
+Title	Yes	Unique job title used throughout the app
+Department	No	Used for department-level filters and analytics
+ReportsTo	No	Must match another position title; drives Span of Control analysis
+Salary	No	Used in Pay Equity analysis and compa-ratio calculations
+Description	No	Free-text field for reference
+
+Positions can be added manually or imported from a CSV or XLSX file. See Section 5 for import instructions.
+
+3.4  Evaluation Workspace
+The Evaluation Workspace is where each position is scored against every compensable factor. Select a position from the left panel, then click a level for each factor.
+
+Filters
+Two dropdowns above the position list allow filtering:
+•	Status filter — All, Completed, In Progress (WIP), or Not Started
+•	Department filter — dynamically populated from your positions data
+A count indicator shows how many positions match the active filters.
+
+Evaluation Summary Panel
+As you score each factor, the right panel updates live showing: total score, job level (from clustering), assigned salary grade, and salary range (min–max).
+
+Factor Contribution Chart
+Below the evaluation form, a horizontal bar chart shows the percentage contribution of each factor to the total score, sorted from highest to lowest.
+
+Saving
+Click Save Evaluation when done with a position. Evaluations are persisted to the project state and auto-saved.
+
+3.5  Job Ranking
+The Job Ranking page lists all evaluated positions sorted by total score, from highest to lowest. It shows each position's department, total score, percentage of maximum, and assigned job level. This table can be exported as CSV or XLSX via the Export button.
+
+3.6  Level Clustering
+Level Clustering maps point-score ranges to named job level bands (e.g. Level 1 through Level 6). The histogram at the top shows how evaluated positions are distributed across the score range.
+
+Auto-Generate
+•	Auto Generate from Distribution — uses score quantiles to create appropriately sized bands based on actual data.
+•	Quick Auto-Generate (Equal Intervals) — divides the score range into 5 equal bands.
+
+Manual Editing and Apply Changes
+You can edit any band's name, minimum, or maximum directly in the input fields. Changes are held in a draft buffer and do not take effect until you click Apply Changes in the section header.
+
+Important: the Apply Changes button only appears when you have unsaved edits. Always click it to commit your changes before navigating away.
+
+Position Assignments
+The right panel shows each evaluated position's auto-assigned level based on the current bands. You can override the assignment for any individual position using the dropdown in that row.
+
+3.7  Salary Structure
+The Salary Structure section has three sub-tabs:
+
+Salary Matrix
+Configure the pay matrix using the controls at the top: number of grades, number of steps per grade, step interval (percentage increase per step), grade movement (percentage increase between grades), and the Grade 1 minimum salary. The matrix auto-computes all values. Individual cells can be double-clicked to override.
+
+Three charts are provided: grade progression, step progression within a grade, and a grade overlap visualisation.
+
+Salary Grades
+Import or define salary grade definitions (Label, Min, Mid, Max). These are used in Pay Equity analysis and evaluation summaries.
+
+Assign Grades
+Link each job level (from Level Clustering) to a salary grade. This drives the salary range display in the Evaluation Workspace.
+
+3.8  Analytics
+The Analytics page displays four charts summarising evaluation results:
+•	Score distribution histogram across all evaluated positions
+•	Factor weight vs. average contribution comparison
+•	Average score by department
+•	Salary range overview by grade
+
+3.9  Span of Control Analysis
+Analyses the reporting relationships populated in the Position Library (via the ReportsTo field). Shows:
+•	Direct report counts per manager
+•	Flags for managers with more than 8 direct reports
+•	Organisational depth chart
+•	Summary statistics: total managers, average span, max span, org depth
+
+⚠ Note: Span of Control requires ReportsTo fields to be populated in the Position Library. If this page is empty, check that your positions have ReportsTo values entered.
+
+3.10  Pay Equity Analysis
+Reviews internal pay equity by comparing actual salaries against salary grade midpoints. Requires positions to have a Salary value and to be assigned a salary grade.
+
+Compa-Ratio
+Compa-ratio = Actual Salary ÷ Grade Midpoint × 100. A value of 100 means exactly at midpoint. Values below 80 or above 120 are typically flagged for review. A histogram shows the distribution across the workforce.
+
+Salary vs Midpoint Scatter
+Plots each evaluated position's actual salary against its grade midpoint. Outliers appear clearly above or below the trend line.
+
+Grade Spread Table
+Lists each salary grade with its defined min, mid, and max, alongside the number of positions in that grade.
+
+3.11  Consulting Report
+Generates a structured, printable report suitable for client deliverables. The report includes: project overview and statistics, the factor framework, the full job ranking, the salary structure, and a pay equity summary.
+
+8.	Click Generate Report to build the report from current project data.
+9.	Review the report in the preview area.
+10.	Click Print / Export PDF to open the report content in a clean print window.
+11.	In the print dialog, choose "Save as PDF" as the destination.
+
+Print / Export PDF opens only the report content in a new window — no sidebar, toolbar, or app chrome is included. Page breaks are automatically applied between major sections.
+
+4. Data Management
+The Data Management page is the central hub for all data import, export, and project file operations. It is accessible from the sidebar navigation.
+
+4.1  Download Templates
+Download CSV templates for each data type to use as a starting point for bulk data entry. Templates include a header row and example rows showing the correct format.
+
+Template	File Name
+Factors	factors-template.csv
+Positions	positions-template.csv
+Job Levels	job-levels-template.csv
+Salary Grades	salary-grades-template.csv
+Salary Matrix	salary-matrix-template.csv
+All Templates	jet-import-templates.xlsx (multi-sheet workbook)
+
+4.2  Upload Data File
+Select a data type from the dropdown, then upload a CSV or XLSX file. The system runs full validation before allowing import.
+
+Import Process
+12.	Select data type from the dropdown.
+13.	Click Choose File (or drag and drop) to upload a CSV or XLSX.
+14.	The system validates the file and displays a Validation Results panel with any errors.
+15.	Review the Data Preview table showing parsed rows.
+16.	If the project already has data of that type, choose Merge or Replace.
+17.	Click the import button to commit.
+
+Merge vs Replace
+Mode	Behaviour
+Replace	Deletes all existing records of that type and imports the file contents fresh. Requires confirmation.
+Merge	Updates records that match by name/title/label, and appends records that do not already exist.
+
+4.3  Restore Saved Project
+To restore a previously saved .jet.json project file:
+18.	Go to Data Management in the sidebar.
+19.	Scroll to the bottom of the Upload Data File card.
+20.	Click Load Project (.jet.json) under the Restore Saved Project heading.
+21.	Select your .jet.json backup file.
+22.	Confirm the prompt — the app shows the project name and a summary (factor count, position count, evaluation count).
+23.	The full project loads immediately across all sections.
+
+⚠ Note: Loading a project file replaces ALL current project data. Export your current project first if you need to keep it.
+
+4.4  Load Sample Data
+Click Load Sample Data (gold button at the bottom of the Upload Data File card) to populate the app with a pre-built demonstration dataset. This is useful for exploring the app's features before entering your own data.
+
+5. CSV / XLSX Column Reference
+5.1  Factors
+Column	Required	Notes
+FactorName	Yes	Unique name for the factor
+Weight	Yes	Positive number; relative importance of the factor
+Description	No	Optional description of the factor
+Level1Name	Yes	Name of the first scoring level
+Level1Points	Yes	Point value for level 1 (numeric)
+Level1Desc	No	Description of level 1
+Level2Name … LevelNName	Yes	At least 2 levels required; system auto-detects up to Level8 and beyond
+Level2Points … LevelNPoints	Yes	Point values for each level
+Level2Desc … LevelNDesc	No	Descriptions for each level
+
+5.2  Positions
+Column	Required	Notes
+Title	Yes	Unique job title; used as the key for merge operations
+Department	No	Department or business unit
+ReportsTo	No	Must match another Title in the file; used for org chart analysis
+Salary	No	Numeric; used in pay equity analysis
+Description	No	Free-text job description
+
+5.3  Job Levels (Clusters)
+Column	Required	Notes
+Name	Yes	Level band name (e.g. "Level 1 - Entry")
+Min	Yes	Minimum score for this band (numeric); must be less than Max
+Max	Yes	Maximum score for this band (numeric)
+
+5.4  Salary Grades
+Column	Required	Notes
+Label	Yes	Grade name (e.g. "Grade 1"); used as key for merge operations
+Min	Yes	Minimum salary for the grade (numeric)
+Mid	Yes	Midpoint salary for the grade (numeric)
+Max	Yes	Maximum salary for the grade (numeric); must be ≥ Min
+
+5.5  Salary Matrix
+Column	Required	Notes
+Grade	Yes	Grade identifier for the row (e.g. "Grade 1")
+Step1_Min	Yes	First step value (minimum salary for the grade)
+Step2 … StepN	Yes	Intermediate step values; must be numerically increasing
+StepN_Max	Yes	Final step value (maximum salary for the grade)
+The system auto-detects the number of step columns — Step9, Step10, and beyond are supported automatically.
+
+6. Saving and Exporting
+6.1  Auto-Save
+JET Pro automatically saves the project to browser localStorage every 60 seconds. The save indicator at the bottom of the sidebar shows the current save state. Data persists across browser sessions, but only in the same browser on the same device.
+
+⚠ Note: Clearing browser data or using a different browser will lose the auto-saved copy. Always export a .jet.json backup after significant work.
+
+6.2  Export Options
+Click the Export button in the top-right toolbar to access:
+Export Type	Format	Contents
+Job Ranking	CSV or XLSX	All evaluated positions sorted by score
+Salary Structure	CSV or XLSX	Salary grade definitions (Label, Min, Mid, Max)
+Factors	CSV or XLSX	Full factor framework with all levels
+Salary Matrix	CSV or multi-sheet XLSX	Full pay matrix with all grades and steps
+Full Project	.jet.json	Complete project backup — all data in a single file
+
+6.3  Saving and Restoring a Full Project
+24.	Click Export (top-right) → Full Project (.jet.json) to download your project.
+25.	Keep the .jet.json file in a safe location.
+26.	To restore: go to Data Management → Upload Data File → Load Project (.jet.json).
+27.	Select the file, confirm the prompt, and the full project is restored.
+
+7. Troubleshooting
+Problem	Likely Cause	Solution
+Evaluation scores are missing after import	Factors were replaced via import (factor IDs changed)	Re-evaluate positions, or restore from a .jet.json backup made before import
+Span of Control page is empty	ReportsTo fields are not populated	Edit positions in Position Library and set the ReportsTo field for each managed position
+Pay Equity page shows no data	Positions have no Salary value, or grades have not been assigned	Add salaries to positions and complete Salary Structure → Assign Grades
+Level changes did not save	Apply Changes was not clicked after editing bands	Go to Level Clustering, make edits, then click Apply Changes in the header
+Print/Export PDF includes the sidebar	Using browser Ctrl+P instead of the Print button	Always use the Print / Export PDF button in the Consulting Report section header
+Load Project button does not appear	Using an older version of the file	Use the latest version — the button is in Data Management → Upload Data File → Restore Saved Project
+Import validation fails with "ReportsTo" errors	ReportsTo references a title not found in the same file	Ensure all ReportsTo values exactly match a Title in the same import file (case-sensitive)
+App does not work offline	Service worker has not cached the file yet	Open the app once while online; it will cache automatically for offline use
+
+8. Glossary
+Term	Definition
+Compensable Factor	A criterion used to measure job value (e.g. Knowledge, Accountability, Problem Solving)
+Weight	A multiplier applied to a factor's score to reflect its relative importance
+Level	A defined scoring tier within a factor (e.g. Level 1 = Basic, Level 4 = Expert)
+Total Score	Sum of (points × weight) for all factors evaluated against a position
+Level Band / Cluster	A score range that maps to a named job grade (e.g. Level 3: 401–650 points)
+Salary Grade	A defined pay range with Min, Mid, and Max salary values
+Step	An incremental pay point within a salary grade (salary matrix column)
+Compa-Ratio	Actual salary ÷ grade midpoint × 100; measures pay position within a grade
+Span of Control	The number of direct reports a manager oversees
+ReportsTo	A position field linking a job to its direct manager by job title
+.jet.json	JET Pro's project file format — a JSON backup of all project data
+
+9. Version History
+Version	Date	Summary
+1.2.0	2026	Data Management page; full validation engine; merge/replace import; Level Clustering Apply Changes pattern; Eval Workspace status and department filters; printable report export (container only); JEB renamed to JET; Load Project (.jet.json) button in Data Management
+1.1.0	2026	Pay Equity analysis; Span of Control page; Consulting Report generator; salary matrix builder with grade and step configuration; currency switcher; guided workflow panel
+1.0.0	2026	Initial release — Factor Builder, Position Library, Evaluation Workspace, Job Ranking, Level Clustering, Salary Structure, Visual Analytics
+
+JET Pro — Job Evaluation Tool
+Developed and Created by Paul Alay  ·  2026  ·  Version 1.2.0
+
