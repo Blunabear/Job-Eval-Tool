@@ -1434,7 +1434,7 @@ Developed and Created by Paul Alay · 2026
       <div class="nav-section-label">Analytics</div>
       <button class="nav-item" onclick="navigate('analytics')" id="nav-analytics">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Analytics
+        Visual Analytics
       </button>
       <button class="nav-item" onclick="navigate('spanofcontrol')" id="nav-spanofcontrol">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="3"/><path d="M5 12H2m20 0h-3M5 12a3 3 0 1 0 0-1M19 12a3 3 0 1 0 0-1M12 8v4m-7 0v4a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-4"/></svg>
@@ -1627,6 +1627,10 @@ Developed and Created by Paul Alay · 2026
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/></svg>
               Start Evaluation
             </button>
+            <button class="btn btn-secondary" style="justify-content:flex-start" onclick="loadSampleData()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              Load Sample Data
+            </button>
           </div>
         </div>
       </div>
@@ -1815,18 +1819,14 @@ Developed and Created by Paul Alay · 2026
             <div class="section-title">Level Clustering</div>
             <div class="text-dim text-sm" style="margin-top:4px">Define point ranges for each job level/grade band</div>
           </div>
-          <div style="display:flex;gap:8px;align-items:center">
+          <div style="display:flex;gap:8px">
             <button class="btn btn-secondary" onclick="autoGenerateClustersQuantile()">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
               Auto Generate from Distribution
             </button>
-            <button class="btn btn-secondary" onclick="addClusterBand()">
+            <button class="btn btn-primary" onclick="addClusterBand()">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Add Level
-            </button>
-            <button class="btn btn-primary" id="cluster-apply-btn" onclick="applyClusterChanges()" style="display:none">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-              Apply Changes
             </button>
           </div>
         </div>
@@ -2000,7 +2000,7 @@ Developed and Created by Paul Alay · 2026
       <!-- ANALYTICS -->
       <div class="page" id="page-analytics">
         <div class="section-header">
-          <div class="section-title">Analytics</div>
+          <div class="section-title">Visual Analytics</div>
         </div>
         <div class="charts-grid">
           <div class="chart-card">
@@ -2193,14 +2193,24 @@ Developed and Created by Paul Alay · 2026
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 4px;display:block;opacity:0.35"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 Or drag &amp; drop here
               </div>
-              <div style="border-top:1px solid var(--border-dim);margin-top:12px;padding-top:12px;display:flex;flex-direction:column;gap:6px">
-                <div style="font-size:10px;color:var(--text-dim);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px">Project File</div>
-                <button class="btn btn-secondary btn-sm" style="justify-content:flex-start;gap:8px" onclick="loadProject()">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+
+              <!-- Restore saved project -->
+              <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border-dim)">
+                <div style="font-size:10px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:8px">Restore Saved Project</div>
+                <button class="btn btn-secondary" style="width:100%;justify-content:center;gap:8px;padding:11px;margin-bottom:6px" onclick="document.getElementById('dm-load-project-input').click()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                   Load Project (.jet.json)
                 </button>
-                <button class="btn btn-ghost btn-sm" style="justify-content:flex-start;gap:8px;color:var(--accent-gold);border-color:var(--accent-gold)" onclick="loadSampleData()">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <input type="file" id="dm-load-project-input" accept=".json" style="display:none" onchange="dmLoadProjectFile(event)">
+                <div id="dm-load-project-status" style="margin-top:6px;font-size:11px;display:none"></div>
+                <p style="font-size:10px;color:var(--text-dim);margin-top:4px;line-height:1.5">Select a <code>.jet.json</code> file exported via <strong>Export → Full Project</strong>. Replaces all current data.</p>
+              </div>
+
+              <!-- Load sample data -->
+              <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border-dim)">
+                <div style="font-size:10px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:8px">Demo Data</div>
+                <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;gap:8px;color:var(--accent-gold);border-color:var(--accent-gold)" onclick="loadSampleData()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                   Load Sample Data
                 </button>
               </div>
@@ -2717,7 +2727,7 @@ function navigate(page) {
   const titles = {
     dashboard:'Dashboard', factors:'Factor Builder', positions:'Position Library',
     workspace:'Evaluation Workspace', ranking:'Job Ranking Dashboard', clustering:'Level Clustering',
-    salary:'Salary Structure Designer', analytics:'Analytics',
+    salary:'Salary Structure Designer', analytics:'Visual Analytics',
     spanofcontrol:'Span of Control Analysis', payequity:'Pay Equity Analysis', reports:'Consulting Report',
     datamanagement:'Data Management'
   };
@@ -3235,61 +3245,32 @@ function renderClustering() {
   renderClusterDistChart();
 }
 
-// Draft buffer — edits stage here until Apply Changes is clicked
-let clusterDraft = null;
-
-function initClusterDraft() {
-  if (clusterDraft === null) clusterDraft = JSON.parse(JSON.stringify(state.clusters));
-}
-
-function markClusterDirty() {
-  const btn = document.getElementById('cluster-apply-btn');
-  if (btn) btn.style.display = '';
-}
-
-function applyClusterChanges() {
-  if (clusterDraft === null) return;
-  state.clusters = JSON.parse(JSON.stringify(clusterDraft));
-  clusterDraft = null;
-  const btn = document.getElementById('cluster-apply-btn');
-  if (btn) btn.style.display = 'none';
-  markUnsaved();
-  renderClustering();
-  toast('Level changes applied', 'success');
-}
-
 function renderClusterBands() {
-  initClusterDraft();
   const container = document.getElementById('cluster-bands-list');
-  if (clusterDraft.length === 0) {
+  if (state.clusters.length === 0) {
     container.innerHTML = '<div class="text-dim text-sm">No levels defined. Add levels or auto-generate.</div>';
     return;
   }
-  container.innerHTML = clusterDraft.map((c, i) => `
+  container.innerHTML = state.clusters.map((c, i) => `
     <div style="display:grid;grid-template-columns:auto 1fr 1fr auto;gap:8px;align-items:center;margin-bottom:8px;padding:10px;background:var(--bg-raised);border:1px solid var(--border-dim);border-radius:var(--radius-sm)">
-      <input type="text" value="${escHtml(c.name)}" style="width:80px"
-        oninput="clusterDraft[${i}].name=this.value;markClusterDirty()">
-      <input type="number" value="${c.min}" placeholder="Min"
-        oninput="clusterDraft[${i}].min=+this.value;markClusterDirty()">
-      <input type="number" value="${c.max}" placeholder="Max"
-        oninput="clusterDraft[${i}].max=+this.value;markClusterDirty()">
+      <input type="text" value="${escHtml(c.name)}" style="width:80px" oninput="state.clusters[${i}].name=this.value;renderClusterAssignments();markUnsaved()">
+      <input type="number" value="${c.min}" placeholder="Min" oninput="state.clusters[${i}].min=+this.value;renderClusterAssignments();markUnsaved()">
+      <input type="number" value="${c.max}" placeholder="Max" oninput="state.clusters[${i}].max=+this.value;renderClusterAssignments();markUnsaved()">
       <button class="btn btn-danger btn-icon btn-sm" onclick="removeCluster(${i})">✕</button>
     </div>
   `).join('');
 }
 
 function addClusterBand() {
-  initClusterDraft();
-  const lastMax = clusterDraft.length > 0 ? clusterDraft[clusterDraft.length-1].max : 0;
-  clusterDraft.push({ name: `Level ${clusterDraft.length+1}`, min: lastMax+1, max: lastMax+150 });
-  markClusterDirty();
+  const lastMax = state.clusters.length > 0 ? state.clusters[state.clusters.length-1].max : 0;
+  state.clusters.push({ name: `Level ${state.clusters.length+1}`, min: lastMax+1, max: lastMax+150 });
+  markUnsaved();
   renderClustering();
 }
 
 function removeCluster(i) {
-  initClusterDraft();
-  clusterDraft.splice(i, 1);
-  markClusterDirty();
+  state.clusters.splice(i, 1);
+  markUnsaved();
   renderClustering();
 }
 
@@ -3305,7 +3286,6 @@ function autoGenerateClusters() {
     min: Math.round(min + i * step),
     max: i === levels-1 ? Math.round(max) + 1 : Math.round(min + (i+1) * step)
   }));
-  clusterDraft = null;
   markUnsaved();
   renderClustering();
   toast('Auto-generated 5 levels', 'success');
@@ -4935,7 +4915,6 @@ function autoGenerateClustersQuantile() {
     const hi = i === levels - 1 ? scores[scores.length - 1] + 1 : scores[Math.floor((i + 1) * step)];
     return { name: `Level ${i + 1}`, min: Math.round(lo), max: Math.round(hi) };
   });
-  clusterDraft = null;
   markUnsaved();
   renderClustering();
   toast(`Auto-generated ${levels} levels from score quantiles`, 'success');
@@ -5342,6 +5321,38 @@ function dmUpdateColHint() {
   const t = document.getElementById('dm-import-type')?.value || 'factors';
   const el = document.getElementById('dm-col-hint');
   if (el) el.innerHTML = DM_COL_HINTS[t] || '';
+}
+
+function dmLoadProjectFile(event) {
+  const file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  const statusEl = document.getElementById('dm-load-project-status');
+  statusEl.style.display = '';
+  statusEl.innerHTML = '<span style="color:var(--text-dim)">⏳ Reading file…</span>';
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data || typeof data !== 'object' || !Array.isArray(data.factors)) {
+        statusEl.innerHTML = '<span style="color:var(--accent-red)">✕ Not a valid .jet.json project file.</span>';
+        return;
+      }
+      const summary = `${(data.factors||[]).length} factors · ${(data.positions||[]).length} positions · ${Object.keys(data.evaluations||{}).length} evaluations`;
+      if (!confirm(`Load project "${data.projectName || 'Unnamed'}"?\n${summary}\n\nThis will replace ALL current project data.`)) {
+        statusEl.innerHTML = '<span style="color:var(--text-dim)">Import cancelled.</span>';
+        return;
+      }
+      Object.assign(state, data);
+      saveProject();
+      renderAll();
+      statusEl.innerHTML = `<span style="color:var(--accent-green)">✓ "<strong>${escHtml(data.projectName||'Unnamed')}</strong>" loaded — ${summary}</span>`;
+      toast('Project loaded successfully', 'success');
+    } catch(err) {
+      statusEl.innerHTML = `<span style="color:var(--accent-red)">✕ Could not read file: ${escHtml(err.message)}</span>`;
+    }
+  };
+  reader.readAsText(file);
 }
 
 function dmResetUpload() {
