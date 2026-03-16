@@ -3316,8 +3316,7 @@ function dmDoImport(mode) {
   if (replaceBtn) replaceBtn.style.display = 'none';
   dmParsedData = null;
   renderDataManagement();
-  toast(`✓ ${count} ${type} imported (${mode})`, 'success');
-}
+  toast(`✓ ${count} ${type} imported (${mode})`, 'success');}
 
 function renderDataManagement() {
   dmUpdateColHint();
@@ -3329,5 +3328,4 @@ function renderDataManagement() {
     <div class="stat-card cyan"><div class="stat-label">Positions</div><div class="stat-value">${state.positions.length}</div><div class="stat-sub">${evalCount} evaluated</div></div>
     <div class="stat-card gold"><div class="stat-label">Job Levels</div><div class="stat-value">${state.clusters.length}</div><div class="stat-sub">Level bands</div></div>
     <div class="stat-card green"><div class="stat-label">Salary Grades</div><div class="stat-value">${state.salaryGrades.length}</div><div class="stat-sub">Grade definitions</div></div>
-    <div class="stat-card blue"><div class="stat-label">Matrix Rows</div><div class="stat-value">${(state.salaryMatrix||[]).length}</div><div class="stat-sub">${(state.salaryMatrix?.[0]||[]).length ? (state.salaryMatrix[0].length + ' steps') : 'Not loaded'}</div></div>`;
-}
+    <div class="stat-card blue"><div class="stat-label">Matrix Rows</div><div class="stat-value">${(state.salaryMatrix||[]).length}</div><div class="stat-sub">${(state.salaryMatrix?.[0]||[]).length ? (state.salaryMatrix[0].length + ' steps') : 'Not loaded'}</div></div>`;}
