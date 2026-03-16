@@ -368,6 +368,7 @@ html, body {
   border-color: transparent;
 }
 .btn-ghost:hover { background: var(--bg-raised); color: var(--text-primary); }
+.ws-filter-btn.active { background: var(--bg-raised); color: var(--text-primary); border-color: var(--border-bright); }
 
 .btn-danger {
   background: rgba(255,79,107,0.1);
@@ -1413,6 +1414,10 @@ Developed and Created by Paul Alay · 2026
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         Position Library
       </button>
+      <button class="nav-item" onclick="navigate('incumbents')" id="nav-incumbents">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="19" x2="16" y2="19"/></svg>
+        Incumbent Library
+      </button>
       <div class="nav-section-label">Evaluation</div>
       <button class="nav-item" onclick="navigate('workspace')" id="nav-workspace">
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
@@ -1529,10 +1534,6 @@ Developed and Created by Paul Alay · 2026
           <svg id="theme-icon-light" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
           <div class="theme-toggle-track"><div class="theme-toggle-thumb"></div></div>
           <span id="theme-label">Dark</span>
-        </button>
-        <button class="btn btn-ghost btn-sm" onclick="loadProject()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Load
         </button>
         <button class="btn btn-primary btn-sm" onclick="newProject()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -1693,7 +1694,6 @@ Developed and Created by Paul Alay · 2026
                   <th onclick="sortPositions('title')">Position Title ↕</th>
                   <th onclick="sortPositions('department')">Department ↕</th>
                   <th onclick="sortPositions('reportsTo')">Reports To ↕</th>
-                  <th onclick="sortPositions('salary')">Current Salary ↕</th>
                   <th>Score</th>
                   <th>Level</th>
                   <th></th>
@@ -1710,6 +1710,55 @@ Developed and Created by Paul Alay · 2026
         </div>
       </div>
 
+      <!-- INCUMBENT LIBRARY -->
+      <div class="page" id="page-incumbents">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Incumbent Library</div>
+            <div class="text-dim text-sm" style="margin-top:4px">Employees in positions — with actual reporting lines and current salaries</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary btn-sm" onclick="exportIncumbentsCSV()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export CSV
+            </button>
+            <button class="btn btn-primary" onclick="openAddIncumbentModal()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Incumbent
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <input type="text" id="incumbent-search" placeholder="Search incumbents..." style="max-width:260px" oninput="renderIncumbentsTable()">
+            <span class="text-dim text-mono text-sm" id="incumbents-count">0 incumbents</span>
+          </div>
+          <div class="table-wrap">
+            <table id="incumbents-table">
+              <thead>
+                <tr>
+                  <th>Employee Name</th>
+                  <th>Position Title</th>
+                  <th>Department</th>
+                  <th>Reports To (Person)</th>
+                  <th>Current Salary</th>
+                  <th>Eval Score</th>
+                  <th>Grade</th>
+                  <th>Compa-Ratio</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="incumbents-tbody"></tbody>
+            </table>
+          </div>
+          <div id="incumbents-empty" class="empty-state" style="display:none">
+            <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <div class="empty-state-title">No Incumbents Yet</div>
+            <div class="empty-state-desc">Add employees manually. Incumbents are linked to positions in the Position Library.</div>
+          </div>
+        </div>
+      </div>
+
       <!-- EVAL WORKSPACE -->
       <div class="page" id="page-workspace">
         <div class="section-header">
@@ -1721,7 +1770,16 @@ Developed and Created by Paul Alay · 2026
         <div class="two-col" style="margin-bottom:16px;grid-template-columns:300px 1fr">
           <div class="card">
             <div class="card-header"><span class="card-title">Select Position</span></div>
-            <div style="padding:12px;max-height:520px;overflow-y:auto" id="workspace-position-list"></div>
+            <div style="padding:8px 12px;border-bottom:1px solid var(--border-dim);display:flex;flex-direction:column;gap:6px">
+              <input type="text" id="ws-pos-search" placeholder="Search positions..." style="font-size:12px" oninput="renderWorkspacePositionList()">
+              <div style="display:flex;gap:4px">
+                <button class="btn btn-ghost btn-sm ws-filter-btn active" id="ws-filter-all" onclick="setWsFilter('all')" style="flex:1;font-size:10px;padding:4px 6px">All</button>
+                <button class="btn btn-ghost btn-sm ws-filter-btn" id="ws-filter-done" onclick="setWsFilter('done')" style="flex:1;font-size:10px;padding:4px 6px">✓ Done</button>
+                <button class="btn btn-ghost btn-sm ws-filter-btn" id="ws-filter-wip" onclick="setWsFilter('wip')" style="flex:1;font-size:10px;padding:4px 6px">⏳ WIP</button>
+                <button class="btn btn-ghost btn-sm ws-filter-btn" id="ws-filter-new" onclick="setWsFilter('new')" style="flex:1;font-size:10px;padding:4px 6px">○ New</button>
+              </div>
+            </div>
+            <div style="padding:12px;max-height:460px;overflow-y:auto" id="workspace-position-list"></div>
           </div>
           <div style="display:flex;flex-direction:column;gap:16px">
             <div id="workspace-eval-area">
@@ -1853,9 +1911,15 @@ Developed and Created by Paul Alay · 2026
                   <span></span>
                 </div>
                 <div id="cluster-bands-list"></div>
-                <button class="btn btn-secondary btn-sm mt-4" style="margin-top:12px" onclick="autoGenerateClusters()">
-                  Quick Auto-Generate (Equal Intervals)
-                </button>
+                <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+                  <button class="btn btn-secondary btn-sm" onclick="autoGenerateClusters()">
+                    Quick Auto-Generate (Equal Intervals)
+                  </button>
+                  <button class="btn btn-primary btn-sm" onclick="applyClusterChanges()" style="margin-left:auto">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    Apply Changes
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -2169,33 +2233,64 @@ Developed and Created by Paul Alay · 2026
           <div class="card">
             <div class="card-header"><span class="card-title">📤 Upload Data File</span></div>
             <div class="card-body">
-              <p style="font-size:11px;color:var(--text-dim);margin-bottom:10px">Select data type, then upload a CSV or XLSX file.</p>
-              <div class="form-group" style="margin-bottom:10px">
-                <label style="font-size:11px">Data Type</label>
-                <select id="dm-import-type" style="width:100%;background:var(--bg-raised);border:1px solid var(--border-mid);color:var(--text-primary);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px" onchange="dmResetUpload()">
-                  <option value="factors">Factors</option>
-                  <option value="positions">Positions</option>
-                  <option value="clusters">Job Levels</option>
-                  <option value="salary">Salary Grades</option>
-                  <option value="salarymatrix">Salary Matrix</option>
-                </select>
+              <!-- Sub-tabs for data upload vs full project -->
+              <div class="tabs" style="margin-bottom:12px">
+                <button class="tab active" id="dm-tab-csv" onclick="dmSwitchUploadTab('csv')">CSV / XLSX Data</button>
+                <button class="tab" id="dm-tab-project" onclick="dmSwitchUploadTab('project')">Full Project (JSON)</button>
               </div>
-              <div id="dm-col-hint" style="background:var(--bg-raised);border:1px solid var(--border-dim);border-radius:var(--radius-sm);padding:8px 10px;font-size:10px;color:var(--text-dim);font-family:var(--font-mono);margin-bottom:10px">
-                Required: <span style="color:var(--accent-cyan)">FactorName</span>, Weight · Levels: Level1Name, Level1Points, Level1Desc …
+              <!-- CSV / XLSX pane -->
+              <div id="dm-upload-pane-csv">
+                <p style="font-size:11px;color:var(--text-dim);margin-bottom:10px">Select data type, then upload a CSV or XLSX file.</p>
+                <div class="form-group" style="margin-bottom:10px">
+                  <label style="font-size:11px">Data Type</label>
+                  <select id="dm-import-type" style="width:100%;background:var(--bg-raised);border:1px solid var(--border-mid);color:var(--text-primary);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px" onchange="dmResetUpload()">
+                    <option value="factors">Factors</option>
+                    <option value="positions">Positions</option>
+                    <option value="clusters">Job Levels</option>
+                    <option value="salary">Salary Grades</option>
+                    <option value="salarymatrix">Salary Matrix</option>
+                  </select>
+                </div>
+                <div id="dm-col-hint" style="background:var(--bg-raised);border:1px solid var(--border-dim);border-radius:var(--radius-sm);padding:8px 10px;font-size:10px;color:var(--text-dim);font-family:var(--font-mono);margin-bottom:10px">
+                  Required: <span style="color:var(--accent-cyan)">FactorName</span>, Weight · Levels: Level1Name, Level1Points, Level1Desc …
+                </div>
+                <button class="btn btn-primary" style="width:100%;padding:14px;flex-direction:column;gap:4px;height:auto;margin-bottom:8px" onclick="document.getElementById('dm-file-input').click()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span style="font-size:13px;font-weight:700">Choose File</span>
+                  <span style="font-size:10px;opacity:0.7;font-weight:400">CSV or XLSX</span>
+                </button>
+                <input type="file" id="dm-file-input" accept=".csv,.xlsx,.xls" style="display:none" onchange="dmHandleFile(event)">
+                <div class="drag-area" id="dm-drop-zone"
+                  ondragover="event.preventDefault();this.style.borderColor='var(--accent-blue)'"
+                  ondragleave="this.style.borderColor=''"
+                  ondrop="dmHandleDrop(event)"
+                  style="padding:12px;font-size:11px;text-align:center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 4px;display:block;opacity:0.35"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  Or drag &amp; drop here
+                </div>
               </div>
-              <button class="btn btn-primary" style="width:100%;padding:14px;flex-direction:column;gap:4px;height:auto;margin-bottom:8px" onclick="document.getElementById('dm-file-input').click()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <span style="font-size:13px;font-weight:700">Choose File</span>
-                <span style="font-size:10px;opacity:0.7;font-weight:400">CSV or XLSX</span>
-              </button>
-              <input type="file" id="dm-file-input" accept=".csv,.xlsx,.xls" style="display:none" onchange="dmHandleFile(event)">
-              <div class="drag-area" id="dm-drop-zone"
-                ondragover="event.preventDefault();this.style.borderColor='var(--accent-blue)'"
-                ondragleave="this.style.borderColor=''"
-                ondrop="dmHandleDrop(event)"
-                style="padding:12px;font-size:11px;text-align:center">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 4px;display:block;opacity:0.35"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                Or drag &amp; drop here
+              <!-- Full Project JSON pane -->
+              <div id="dm-upload-pane-project" style="display:none">
+                <p style="font-size:11px;color:var(--text-dim);margin-bottom:10px">Re-import a full project previously exported as <strong style="color:var(--text-secondary)">.jeb.json</strong>. This will replace <em>all</em> current project data.</p>
+                <div style="background:rgba(245,200,66,0.07);border:1px solid rgba(245,200,66,0.25);border-radius:var(--radius-sm);padding:8px 12px;font-size:11px;color:var(--accent-gold);margin-bottom:12px;display:flex;gap:8px;align-items:flex-start">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  Warning: Importing a project file will overwrite all existing data including factors, positions, evaluations, levels, and salary grades.
+                </div>
+                <button class="btn btn-primary" style="width:100%;padding:14px;flex-direction:column;gap:4px;height:auto;margin-bottom:8px" onclick="document.getElementById('dm-project-file-input').click()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span style="font-size:13px;font-weight:700">Choose Project File</span>
+                  <span style="font-size:10px;opacity:0.7;font-weight:400">.jeb.json</span>
+                </button>
+                <input type="file" id="dm-project-file-input" accept=".json" style="display:none" onchange="dmHandleProjectFile(event)">
+                <div class="drag-area"
+                  ondragover="event.preventDefault();this.style.borderColor='var(--accent-blue)'"
+                  ondragleave="this.style.borderColor=''"
+                  ondrop="dmHandleProjectDrop(event)"
+                  style="padding:12px;font-size:11px;text-align:center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 4px;display:block;opacity:0.35"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  Or drag &amp; drop here
+                </div>
+                <div id="dm-project-status" style="margin-top:10px;display:none"></div>
               </div>
             </div>
           </div>
@@ -2608,12 +2703,66 @@ Developed and Created by Paul Alay · 2026
 <!-- Toast Container -->
 <div id="toast-container"></div>
 
+<!-- Add Incumbent Modal -->
+<div class="modal-overlay" id="modal-incumbent">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-incumbent-title">Add Incumbent</span>
+      <button class="modal-close" onclick="closeModal('modal-incumbent')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Employee Name *</label>
+          <input type="text" id="inc-name" placeholder="e.g. Juan dela Cruz">
+        </div>
+        <div class="form-group">
+          <label>Position *</label>
+          <select id="inc-position" style="background:var(--bg-raised);border:1px solid var(--border-mid);color:var(--text-primary);border-radius:var(--radius-sm);padding:6px 8px;font-size:13px;width:100%">
+            <option value="">— Select Position —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <input type="text" id="inc-dept" placeholder="e.g. Engineering">
+        </div>
+        <div class="form-group">
+          <label>Reports To (Person)</label>
+          <input type="text" id="inc-reports-to" placeholder="e.g. Maria Santos">
+        </div>
+        <div class="form-group">
+          <label>Current Salary *</label>
+          <input type="number" id="inc-salary" placeholder="e.g. 85000" min="0">
+        </div>
+        <div class="form-group">
+          <label>Employment Status</label>
+          <select id="inc-status" style="background:var(--bg-raised);border:1px solid var(--border-mid);color:var(--text-primary);border-radius:var(--radius-sm);padding:6px 8px;font-size:13px;width:100%">
+            <option value="Regular">Regular</option>
+            <option value="Probationary">Probationary</option>
+            <option value="Contractual">Contractual</option>
+            <option value="Part-time">Part-time</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label>Notes</label>
+          <textarea id="inc-notes" placeholder="Optional notes about this incumbent..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-incumbent')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveIncumbent()">Save Incumbent</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ==================== APP STATE ====================
 let state = {
   projectName: 'Untitled Project',
   factors: [],
   positions: [],
+  incumbents: [],
   evaluations: {}, // positionId -> { factorId: levelIndex }
   clusters: [],
   salaryGrades: [],
@@ -2709,6 +2858,7 @@ function navigate(page) {
   if (navEl)  navEl.classList.add('active');
   const titles = {
     dashboard:'Dashboard', factors:'Factor Builder', positions:'Position Library',
+    incumbents:'Incumbent Library',
     workspace:'Evaluation Workspace', ranking:'Job Ranking Dashboard', clustering:'Level Clustering',
     salary:'Salary Structure Designer', analytics:'Visual Analytics',
     spanofcontrol:'Span of Control Analysis', payequity:'Pay Equity Analysis', reports:'Consulting Report',
@@ -2717,6 +2867,7 @@ function navigate(page) {
   document.getElementById('page-title-text').textContent = titles[page] || page;
   if (page === 'dashboard')      renderDashboard();
   if (page === 'positions')      renderPositionsTable();
+  if (page === 'incumbents')     renderIncumbentsTable();
   if (page === 'ranking')        renderRankingTable();
   if (page === 'workspace')      renderWorkspace();
   if (page === 'clustering')     renderClustering();
@@ -2987,7 +3138,6 @@ function renderPositionsTable() {
       <td>${escHtml(p.title)}</td>
       <td>${escHtml(p.department||'—')}</td>
       <td style="color:var(--text-dim)">${escHtml(p.reportsTo||'—')}</td>
-      <td style="font-family:var(--font-mono)">${p.salary ? fmtCurrency(p.salary) : '—'}</td>
       <td style="font-family:var(--font-mono);color:var(--accent-cyan)">${score > 0 ? score.toFixed(0) : '—'}</td>
       <td>${level ? `<span class="badge badge-blue">${escHtml(level.name)}</span>` : '<span class="text-dim">—</span>'}</td>
       <td>
@@ -3015,24 +3165,65 @@ function renderWorkspace() {
   if (currentEvalPositionId) renderEvalArea();
 }
 
+let wsStatusFilter = 'all';
+
+function setWsFilter(f) {
+  wsStatusFilter = f;
+  document.querySelectorAll('.ws-filter-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('ws-filter-' + f);
+  if (btn) btn.classList.add('active');
+  renderWorkspacePositionList();
+}
+
 function renderWorkspacePositionList() {
   const container = document.getElementById('workspace-position-list');
   if (state.positions.length === 0) {
     container.innerHTML = '<div class="text-dim text-sm" style="padding:12px">No positions yet. Add them in Position Library.</div>';
     return;
   }
-  container.innerHTML = state.positions.map(p => {
+  const search = (document.getElementById('ws-pos-search')?.value || '').toLowerCase();
+  const list = state.positions.filter(p => {
+    const matchSearch = !search ||
+      p.title.toLowerCase().includes(search) ||
+      (p.department||'').toLowerCase().includes(search);
+    const ev = state.evaluations[p.id] || {};
+    const factorCount = state.factors.length;
+    const answeredCount = Object.keys(ev).filter(fid => ev[fid] !== undefined && ev[fid] >= 0).length;
+    const isDone = factorCount > 0 && answeredCount >= factorCount;
+    const isWip = answeredCount > 0 && !isDone;
+    const isNew = answeredCount === 0;
+    const matchFilter =
+      wsStatusFilter === 'all' ||
+      (wsStatusFilter === 'done' && isDone) ||
+      (wsStatusFilter === 'wip' && isWip) ||
+      (wsStatusFilter === 'new' && isNew);
+    return matchSearch && matchFilter;
+  });
+  if (list.length === 0) {
+    container.innerHTML = '<div class="text-dim text-sm" style="padding:12px;text-align:center">No positions match this filter.</div>';
+    return;
+  }
+  container.innerHTML = list.map(p => {
     const score = getPositionScore(p.id);
     const isActive = currentEvalPositionId === p.id;
-    const hasEval = state.evaluations[p.id] && Object.keys(state.evaluations[p.id]).length > 0;
+    const ev = state.evaluations[p.id] || {};
+    const factorCount = state.factors.length;
+    const answeredCount = Object.keys(ev).filter(fid => ev[fid] !== undefined && ev[fid] >= 0).length;
+    const isDone = factorCount > 0 && answeredCount >= factorCount;
+    const isWip = answeredCount > 0 && !isDone;
+    const statusBadge = isDone
+      ? `<span class="badge badge-green" style="font-size:9px;padding:1px 6px">Done</span>`
+      : isWip
+        ? `<span class="badge badge-gold" style="font-size:9px;padding:1px 6px">WIP ${answeredCount}/${factorCount}</span>`
+        : `<span style="font-size:10px;color:var(--text-dim)">Not started</span>`;
     return `<div id="eval-pos-${p.id}" class="eval-pos-item${isActive ? ' active' : ''}"
       style="padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;margin-bottom:4px;border:1px solid ${isActive?'var(--accent-blue)':'var(--border-dim)'};background:${isActive?'rgba(79,142,247,0.08)':'var(--bg-raised)'};transition:var(--transition)"
       onclick="selectEvalPosition('${p.id}')">
       <div style="font-size:13px;font-weight:600;color:${isActive?'var(--accent-blue)':'var(--text-primary)'}">${escHtml(p.title)}</div>
       <div style="font-size:11px;color:var(--text-dim);margin-top:2px">${escHtml(p.department||'No department')}</div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
-        ${hasEval ? `<span style="font-family:var(--font-mono);font-size:11px;color:var(--accent-cyan)">${score.toFixed(0)} pts</span>` : '<span style="font-size:10px;color:var(--text-dim)">Not evaluated</span>'}
-        ${hasEval ? '<span class="badge badge-green" style="font-size:9px;padding:1px 6px">Done</span>' : ''}
+        ${isDone ? `<span style="font-family:var(--font-mono);font-size:11px;color:var(--accent-cyan)">${score.toFixed(0)} pts</span>` : '<span></span>'}
+        ${statusBadge}
       </div>
     </div>`;
   }).join('');
@@ -4526,7 +4717,7 @@ function newProject() {
   if (!name) return;
   state = {
     projectName: name || 'Untitled Project',
-    factors: [], positions: [], evaluations: {},
+    factors: [], positions: [], incumbents: [], evaluations: {},
     clusters: [], salaryGrades: [], unsaved: false
   };
   document.getElementById('project-name-display').textContent = state.projectName;
@@ -4542,10 +4733,213 @@ function markUnsaved() {
 function renderAll() {
   renderFactors();
   renderPositionsTable();
+  renderIncumbentsTable();
   renderDashboard();
 }
 
-// ==================== SAMPLE DATA ====================
+// ==================== APPLY CLUSTER CHANGES ====================
+function applyClusterChanges() {
+  markUnsaved();
+  renderClustering();
+  toast('Level definitions applied & saved', 'success');
+}
+
+// ==================== INCUMBENTS ====================
+let editingIncumbentId = null;
+
+function openAddIncumbentModal(id = null) {
+  editingIncumbentId = id;
+  document.getElementById('modal-incumbent-title').textContent = id ? 'Edit Incumbent' : 'Add Incumbent';
+  // Populate position dropdown
+  const sel = document.getElementById('inc-position');
+  sel.innerHTML = '<option value="">— Select Position —</option>' +
+    state.positions.map(p => `<option value="${p.id}">${escHtml(p.title)}${p.department ? ' ('+escHtml(p.department)+')' : ''}</option>`).join('');
+  if (id) {
+    const inc = (state.incumbents || []).find(x => x.id === id);
+    if (inc) {
+      document.getElementById('inc-name').value = inc.name || '';
+      sel.value = inc.positionId || '';
+      document.getElementById('inc-dept').value = inc.department || '';
+      document.getElementById('inc-reports-to').value = inc.reportsTo || '';
+      document.getElementById('inc-salary').value = inc.salary || '';
+      document.getElementById('inc-status').value = inc.status || 'Regular';
+      document.getElementById('inc-notes').value = inc.notes || '';
+    }
+  } else {
+    document.getElementById('inc-name').value = '';
+    sel.value = '';
+    document.getElementById('inc-dept').value = '';
+    document.getElementById('inc-reports-to').value = '';
+    document.getElementById('inc-salary').value = '';
+    document.getElementById('inc-status').value = 'Regular';
+    document.getElementById('inc-notes').value = '';
+  }
+  openModal('modal-incumbent');
+}
+
+function saveIncumbent() {
+  const name = document.getElementById('inc-name').value.trim();
+  const positionId = document.getElementById('inc-position').value;
+  const salary = parseFloat(document.getElementById('inc-salary').value) || 0;
+  if (!name) { toast('Employee name is required', 'error'); return; }
+  if (!positionId) { toast('Please select a position', 'error'); return; }
+  if (!state.incumbents) state.incumbents = [];
+  const data = {
+    name,
+    positionId,
+    department: document.getElementById('inc-dept').value.trim(),
+    reportsTo: document.getElementById('inc-reports-to').value.trim(),
+    salary,
+    status: document.getElementById('inc-status').value,
+    notes: document.getElementById('inc-notes').value.trim()
+  };
+  if (editingIncumbentId) {
+    const inc = state.incumbents.find(x => x.id === editingIncumbentId);
+    if (inc) Object.assign(inc, data);
+  } else {
+    state.incumbents.push({ id: uid(), ...data });
+  }
+  markUnsaved();
+  closeModal('modal-incumbent');
+  renderIncumbentsTable();
+  toast(editingIncumbentId ? 'Incumbent updated' : 'Incumbent added', 'success');
+}
+
+function deleteIncumbent(id) {
+  if (!confirm('Delete this incumbent?')) return;
+  state.incumbents = (state.incumbents || []).filter(x => x.id !== id);
+  markUnsaved();
+  renderIncumbentsTable();
+  toast('Incumbent deleted', 'info');
+}
+
+function renderIncumbentsTable() {
+  if (!state.incumbents) state.incumbents = [];
+  const search = (document.getElementById('incumbent-search')?.value || '').toLowerCase();
+  const list = state.incumbents.filter(inc =>
+    inc.name.toLowerCase().includes(search) ||
+    (inc.department||'').toLowerCase().includes(search) ||
+    (inc.reportsTo||'').toLowerCase().includes(search)
+  );
+  const tbody = document.getElementById('incumbents-tbody');
+  const empty = document.getElementById('incumbents-empty');
+  if (!tbody) return;
+  const countEl = document.getElementById('incumbents-count');
+  if (countEl) countEl.textContent = `${list.length} incumbent${list.length!==1?'s':''}`;
+  if (list.length === 0) {
+    tbody.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  tbody.innerHTML = list.map(inc => {
+    const pos = state.positions.find(p => p.id === inc.positionId);
+    const score = pos ? getPositionScore(pos.id) : 0;
+    const level = pos ? getAssignedLevel(score) : null;
+    const grade = level ? getAssignedGrade(level) : null;
+    let compaRatio = '—';
+    if (inc.salary && grade && grade.mid) {
+      compaRatio = ((inc.salary / grade.mid) * 100).toFixed(1) + '%';
+    }
+    return `<tr>
+      <td style="font-weight:600">${escHtml(inc.name)}</td>
+      <td>${pos ? escHtml(pos.title) : '<span class="text-dim">—</span>'}</td>
+      <td>${escHtml(inc.department||'—')}</td>
+      <td style="color:var(--text-dim)">${escHtml(inc.reportsTo||'—')}</td>
+      <td style="font-family:var(--font-mono)">${inc.salary ? fmtCurrency(inc.salary) : '—'}</td>
+      <td style="font-family:var(--font-mono);color:var(--accent-cyan)">${score > 0 ? score.toFixed(0) : '—'}</td>
+      <td>${grade ? `<span class="badge badge-gold">${escHtml(grade.label||grade.grade||'—')}</span>` : '<span class="text-dim">—</span>'}</td>
+      <td style="font-family:var(--font-mono);color:${inc.salary && grade && grade.mid ? (inc.salary/grade.mid >= 1 ? 'var(--accent-green)' : 'var(--accent-red)') : 'var(--text-dim)'}">${compaRatio}</td>
+      <td>
+        <div class="inline-actions">
+          <button class="btn btn-ghost btn-icon btn-sm" onclick="openAddIncumbentModal('${inc.id}')">✎</button>
+          <button class="btn btn-danger btn-icon btn-sm" onclick="deleteIncumbent('${inc.id}')">✕</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function exportIncumbentsCSV() {
+  if (!state.incumbents || state.incumbents.length === 0) { toast('No incumbents to export', 'error'); return; }
+  const rows = [['Employee Name','Position','Department','Reports To','Salary','Status','Eval Score','Grade','Compa-Ratio','Notes']];
+  state.incumbents.forEach(inc => {
+    const pos = state.positions.find(p => p.id === inc.positionId);
+    const score = pos ? getPositionScore(pos.id) : 0;
+    const level = pos ? getAssignedLevel(score) : null;
+    const grade = level ? getAssignedGrade(level) : null;
+    const compa = inc.salary && grade && grade.mid ? ((inc.salary/grade.mid)*100).toFixed(1)+'%' : '';
+    rows.push([inc.name, pos?.title||'', inc.department||'', inc.reportsTo||'', inc.salary||'', inc.status||'', score>0?score.toFixed(0):'', grade?.label||grade?.grade||'', compa, inc.notes||'']);
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'incumbents.csv'; a.click();
+  toast('Incumbents exported', 'success');
+}
+
+// ==================== DM UPLOAD TAB SWITCH ====================
+function dmSwitchUploadTab(tab) {
+  document.getElementById('dm-upload-pane-csv').style.display = tab === 'csv' ? '' : 'none';
+  document.getElementById('dm-upload-pane-project').style.display = tab === 'project' ? '' : 'none';
+  document.getElementById('dm-tab-csv').classList.toggle('active', tab === 'csv');
+  document.getElementById('dm-tab-project').classList.toggle('active', tab === 'project');
+}
+
+function dmHandleProjectFile(event) {
+  const file = event.target.files[0];
+  if (file) processDmProjectFile(file);
+}
+
+function dmHandleProjectDrop(event) {
+  event.preventDefault();
+  const file = event.dataTransfer.files[0];
+  if (file) processDmProjectFile(file);
+}
+
+function processDmProjectFile(file) {
+  if (!file.name.endsWith('.json')) { toast('Please select a .jeb.json file', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.factors && !data.positions) { toast('File does not appear to be a valid project JSON', 'error'); return; }
+      const statusEl = document.getElementById('dm-project-status');
+      const summary = [
+        data.projectName ? `Project: <strong>${escHtml(data.projectName)}</strong>` : '',
+        data.factors?.length ? `${data.factors.length} factors` : '',
+        data.positions?.length ? `${data.positions.length} positions` : '',
+        data.clusters?.length ? `${data.clusters.length} levels` : '',
+        data.salaryGrades?.length ? `${data.salaryGrades.length} salary grades` : '',
+        data.incumbents?.length ? `${data.incumbents.length} incumbents` : ''
+      ].filter(Boolean).join(' · ');
+      statusEl.style.display = '';
+      statusEl.innerHTML = `<div style="background:var(--bg-raised);border:1px solid var(--border-mid);border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:var(--text-secondary);margin-bottom:10px">${summary}</div>
+        <button class="btn btn-primary" style="width:100%" onclick="confirmDmProjectImport(${JSON.stringify(JSON.stringify(data)).replace(/</g,'\\u003c')})">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+          Replace All Data with This Project
+        </button>`;
+    } catch(err) { toast('Failed to parse JSON: ' + err.message, 'error'); }
+  };
+  reader.readAsText(file);
+}
+
+function confirmDmProjectImport(jsonStr) {
+  if (!confirm('This will replace ALL current project data. Are you sure?')) return;
+  try {
+    const data = JSON.parse(jsonStr);
+    Object.assign(state, data);
+    if (!state.incumbents) state.incumbents = [];
+    if (state.currencySymbol) currencySymbol = state.currencySymbol;
+    document.getElementById('project-name-display').textContent = state.projectName || 'Untitled';
+    markUnsaved();
+    renderAll();
+    toast('Project imported successfully', 'success');
+    document.getElementById('dm-project-status').style.display = 'none';
+    document.getElementById('dm-project-file-input').value = '';
+  } catch(err) { toast('Import failed: ' + err.message, 'error'); }
+}
+
+
 function loadSampleData() {
   if (!confirm('Load sample data? This will replace any existing data.')) return;
   state.projectName = 'Tech Company Evaluation';
