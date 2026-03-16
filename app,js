@@ -1,3 +1,5 @@
+const APP_SIGNATURE = "JETPRO-PAUL-ALAY-2026";
+
 // ==================== APP STATE ====================
 let state = {
   projectName: 'Untitled Project',
